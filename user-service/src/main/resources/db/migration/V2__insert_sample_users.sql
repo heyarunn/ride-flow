@@ -1,0 +1,57 @@
+-- V2: Insert sample users
+
+INSERT INTO users (
+    id,
+    username,
+    email,
+    phone_number,
+    status,
+    created_at,
+    updated_at
+)
+VALUES
+    (
+        '550e8400-e29b-41d4-a716-446655440001',
+        'arun',
+        'arun@example.com',
+        '+919876543210',
+        'ACTIVE',
+        CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP
+    ),
+    (
+        '550e8400-e29b-41d4-a716-446655440002',
+        'rahul',
+        'rahul@example.com',
+        '+919876543211',
+        'ACTIVE',
+        CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP
+    ),
+    (
+        '550e8400-e29b-41d4-a716-446655440003',
+        'meera',
+        'meera@example.com',
+        '+919876543212',
+        'ACTIVE',
+        CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP
+    ),
+    (
+        '550e8400-e29b-41d4-a716-446655440004',
+        'vishnu',
+        'vishnu@example.com',
+        '+919876543213',
+        'ACTIVE',
+        CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP
+    ),
+    (
+        '550e8400-e29b-41d4-a716-446655440005',
+        'neha',
+        'neha@example.com',
+        '+919876543214',
+        'ACTIVE',
+        CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP
+    );
