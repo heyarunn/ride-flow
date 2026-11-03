@@ -5,8 +5,7 @@ import com.rideflow.ride_service.domain.RideStatus;
 import com.rideflow.ride_service.domain.dto.RideRequest;
 import com.rideflow.ride_service.exception.DriverNotAvailableException;
 import com.rideflow.ride_service.exception.RideNotFoundException;
-import com.rideflow.ride_service.matching.CabDriverMatchingService;
-import com.rideflow.ride_service.matching.DriverMatchingService;
+import com.rideflow.ride_service.matching.GeoDriverMatchingService;
 import com.rideflow.ride_service.repository.RideRepository;
 import com.rideflow.ride_service.service.RideService;
 import org.springframework.stereotype.Service;
@@ -20,9 +19,9 @@ import java.util.UUID;
 public class RideServiceImpl implements RideService {
 
     private final RideRepository rideRepository;
-    private final CabDriverMatchingService driverMatchingService;
+    private final GeoDriverMatchingService driverMatchingService;
 
-    public RideServiceImpl(RideRepository rideRepository, CabDriverMatchingService driverMatchingService) {
+    public RideServiceImpl(RideRepository rideRepository, GeoDriverMatchingService driverMatchingService) {
         this.rideRepository = rideRepository;
         this.driverMatchingService = driverMatchingService;
     }
