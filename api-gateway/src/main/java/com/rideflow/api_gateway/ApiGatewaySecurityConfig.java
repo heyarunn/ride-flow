@@ -30,7 +30,7 @@ public class ApiGatewaySecurityConfig {
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchanges -> exchanges
-                        .pathMatchers("/api/v1/auth/**", "/actuator/**").permitAll()
+                        .pathMatchers("/api/v1/login","/api/v1/register", "/actuator/**").permitAll()
                         .pathMatchers(HttpMethod.POST, "/api/v1/users", "/api/v1/drivers").permitAll()
                         .anyExchange().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))

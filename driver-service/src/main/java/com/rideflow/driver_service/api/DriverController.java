@@ -2,10 +2,8 @@ package com.rideflow.driver_service.api;
 
 import com.rideflow.driver_service.domain.Driver;
 import com.rideflow.driver_service.domain.DriverStatus;
-import com.rideflow.driver_service.domain.dto.DriverRequest;
-import com.rideflow.driver_service.domain.dto.DriverResponse;
-import com.rideflow.driver_service.domain.dto.UpdateLocationRequest;
-import com.rideflow.driver_service.domain.dto.UpdateStatusRequest;
+import com.rideflow.driver_service.domain.dto.*;
+import com.rideflow.driver_service.geo.NearbyDriverService;
 import com.rideflow.driver_service.service.DriverService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -20,9 +18,11 @@ import java.util.UUID;
 public class DriverController {
 
     private final DriverService driverService;
+    private final NearbyDriverService nearbyDriverService;
 
-    public DriverController(DriverService driverService) {
+    public DriverController(DriverService driverService, NearbyDriverService nearbyDriverService) {
         this.driverService = driverService;
+        this.nearbyDriverService = nearbyDriverService;
     }
 
     @PostMapping
@@ -70,4 +70,17 @@ public class DriverController {
         );
     }
 
+    @GetMapping("/nearby")
+    public List<NearbyDriverResonse> nearBy(
+            @RequestParam("lat") double latitude,
+            @RequestParam("long") double longitude,
+            @RequestParam(name = "rad", defaultValue = "5.0") double radiusKm,
+            @RequestParam(name = "lim", defaultValue = "5") int limit) {
+
+        return nearbyDriverService
+                .findNearByAvailable(latitude, longitude, radiusKm, limit)
+                .stream()
+                .map(NearbyDriverResonse::from)
+                .toList();
+    }
 }
