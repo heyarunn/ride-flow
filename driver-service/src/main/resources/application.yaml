@@ -24,6 +24,9 @@ spring:
 rideflow:
   jwt:
     secret: ${RIDEFLOW_JWT_SECRET:local-dev-only-secret-change-me-0123456789}
+  locationmock:
+    interval-ms: 3000
+    enabled: ${RIDEFLOW_MOCK_ENABLED:true}
 
 eureka:
   client:

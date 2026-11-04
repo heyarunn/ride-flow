@@ -1,6 +1,8 @@
 package com.rideflow.driver_service.geo;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class GridSpatialIndex {
 
@@ -9,7 +11,12 @@ public class GridSpatialIndex {
     private record CellKey(int gridX, int gridY) {}
 
     private final double cellSizeDegrees;
-    private final Map<CellKey, List<Entry>> cells = new HashMap<>();
+
+    // current cell and the drivers in that cell
+    private final Map<CellKey, List<Entry>> cells = new ConcurrentHashMap<>();
+
+    // driver id and the current cell key
+    private final Map<UUID, CellKey> driverCells = new ConcurrentHashMap<>();
 
     public GridSpatialIndex(double cellSizeDegrees) {
         if (cellSizeDegrees <= 0) {
@@ -24,19 +31,39 @@ public class GridSpatialIndex {
         return new CellKey(gx, gy);
     }
 
-    // Add entries to the list
-    public void add(UUID driverId, double latitude, double longitude) {
-        CellKey cellKey = cellOf(latitude, longitude);
+    // insert or move a driver to a new location
+    public void upsert(UUID driverId, double latitude, double longitude) {
+        CellKey newKey = cellOf(latitude, longitude);
+        CellKey oldKey = driverCells.get(driverId);
 
-        cells.computeIfAbsent(cellKey, k -> new ArrayList<>())
-                .add(new Entry(driverId, latitude, longitude));
+        if (oldKey!=null && !oldKey.equals(newKey)) {
+            removeFromCell(oldKey, driverId);
+        }
+
+        List<Entry> bucket = cells.computeIfAbsent(newKey, k -> new CopyOnWriteArrayList<>());
+        bucket.removeIf(entry -> entry.driverId().equals(driverId));
+        bucket.add(new Entry(driverId, latitude, longitude));
+
+        driverCells.put(driverId, newKey);
     }
 
-    // Clear all entries
-    public void clear() {
-        cells.clear();
+    // remove a driver from an index
+    public void remove(UUID driverId) {
+        CellKey cellKey = driverCells.remove(driverId);
+        if (cellKey!=null) {
+            removeFromCell(cellKey, driverId);
+        }
     }
 
+    // remove a driver id from a cell
+    public void removeFromCell(CellKey cellKey, UUID driverId) {
+        List<Entry> bucket = cells.get(cellKey);
+        if (bucket!=null) {
+            bucket.removeIf(entry -> entry.driverId().equals(driverId));
+        }
+    }
+
+    // get the size of cells
     public int size() {
         return cells.values()
                 .stream()
@@ -44,6 +71,7 @@ public class GridSpatialIndex {
                 .sum();
     }
 
+    // find the drivers within radiusKm of longitude, latitude, as nearest will be the first one
     public List<Result> queryNearBy(
             double longitude,
             double latitude,
