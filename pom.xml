@@ -20,6 +20,7 @@
         <module>ride-service</module>
         <module>auth-service</module>
         <module>common-security</module>
+        <module>common-events</module>
     </modules>
 
     <properties>
