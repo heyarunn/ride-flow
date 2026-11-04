@@ -11,25 +11,15 @@ import java.util.UUID;
 @Service
 public class NearbyDriverService {
 
-    private static final double CELL_SIZE_DEGREES = 0.05;
+    private final LiveDriverIndex liveDriverIndex;
 
-    private final DriverRepository driverRepository;
-
-    public NearbyDriverService(DriverRepository driverRepository) {
-        this.driverRepository = driverRepository;
+    public NearbyDriverService(LiveDriverIndex liveDriverIndex) {
+        this.liveDriverIndex = liveDriverIndex;
     }
 
+    // Find AVAILABLE drivers from nearby with in radiusKm
     public List<GridSpatialIndex.Result> findNearByAvailable(double latitude, double longitude, double radiusKm, int limit)
     {
-        GridSpatialIndex gridSpatialIndex = new GridSpatialIndex(CELL_SIZE_DEGREES);
-        List<Driver> availableDrivers = driverRepository.findByStatus(DriverStatus.AVAILABLE);
-
-        for (Driver driver: availableDrivers) {
-            if (driver.getCurrentLatitude()!=null && driver.getCurrentLongitude()!=null) {
-                gridSpatialIndex.add(driver.getId(), driver.getCurrentLatitude(), driver.getCurrentLongitude());
-            }
-        }
-
-        return gridSpatialIndex.queryNearBy(latitude, longitude, radiusKm, limit);
+        return liveDriverIndex.findNearby(latitude, longitude, radiusKm, limit);
     }
 }

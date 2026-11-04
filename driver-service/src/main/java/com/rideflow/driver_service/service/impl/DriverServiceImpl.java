@@ -7,6 +7,7 @@ import com.rideflow.driver_service.domain.dto.UpdateLocationRequest;
 import com.rideflow.driver_service.domain.dto.UpdateStatusRequest;
 import com.rideflow.driver_service.exception.DriverNotFoundException;
 import com.rideflow.driver_service.exception.DuplicateDriverException;
+import com.rideflow.driver_service.geo.LiveDriverIndex;
 import com.rideflow.driver_service.repository.DriverRepository;
 import com.rideflow.driver_service.service.DriverService;
 import org.springframework.stereotype.Service;
@@ -20,9 +21,11 @@ import java.util.UUID;
 public class DriverServiceImpl implements DriverService {
 
     private final DriverRepository driverRepository;
+    private final LiveDriverIndex liveDriverIndex;
 
-    public DriverServiceImpl(DriverRepository driverRepository) {
+    public DriverServiceImpl(DriverRepository driverRepository, LiveDriverIndex liveDriverIndex) {
         this.driverRepository = driverRepository;
+        this.liveDriverIndex = liveDriverIndex;
     }
 
     @Override
@@ -65,6 +68,9 @@ public class DriverServiceImpl implements DriverService {
     public Driver updateStatus(UUID id, UpdateStatusRequest updateStatusRequest) {
         Driver currDriver = getById(id);
         currDriver.setDriverStatus(updateStatusRequest.status());
+        // Update in the live index
+        liveDriverIndex.onStatusUpdatedAsync(
+                id, updateStatusRequest.status(),currDriver.getCurrentLatitude(), currDriver.getCurrentLongitude());
         return currDriver;
     }
 
@@ -72,6 +78,9 @@ public class DriverServiceImpl implements DriverService {
     public Driver updateLocation(UUID id, UpdateLocationRequest updateLocationRequest) {
         Driver currDriver = getById(id);
         currDriver.updateLocation(updateLocationRequest.longitude(), updateLocationRequest.latitude());
+        // Update in the live index
+        liveDriverIndex.onLocationUpdatedAsync(
+                id, updateLocationRequest.longitude(), updateLocationRequest.latitude());
         return currDriver;
     }
 
