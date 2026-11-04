@@ -125,12 +125,15 @@ services:
       SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres:5432/rideflow_drivers"
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: "http://eureka-server:8761/eureka/"
       RIDEFLOW_JWT_SECRET: "local-dev-only-secret-change-me-in-production-12"
+      SPRING_DATA_REDIS_HOST: "redis"
     depends_on:
       postgres:
         condition: service_healthy
       eureka-server:
         condition: service_healthy
       kafka:
+        condition: service_healthy
+      redis:
         condition: service_healthy
 
   ride-service:
