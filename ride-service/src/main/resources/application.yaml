@@ -33,9 +33,9 @@ spring:
       key-serializer: org.apache.kafka.common.serialization.StringDeserializer
       value-serializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
-        spring.json.value.default.type: com.rideflow.events.RideflowEvent
+        spring.json.value.default.type: com.rideflow.common_events.events.RideflowEvent
         spring.json.use.type.headers: false
-        spring.json.trusted.packages: com.rideflow.events
+        spring.json.trusted.packages: com.rideflow.common_events
 
 rideflow:
   jwt:
