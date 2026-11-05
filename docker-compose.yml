@@ -74,11 +74,11 @@ services:
       - "8080:8080"
     environment:
       EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: "http://eureka-server:8761/eureka/"
-      #      RIDEFLOW_JWT_SECRET: "$${RIDEFLOW_JWT_SECRET:-local-dev-only-secret-change-me-in-production-12}"
+      # RIDEFLOW_JWT_SECRET: "$${RIDEFLOW_JWT_SECRET:-local-dev-only-secret-change-me-in-production-12}"
       RIDEFLOW_JWT_SECRET: "local-dev-only-secret-change-me-in-production-12"
     depends_on:
       eureka-server:
-        condition: service_healthy
+        condition: service_started
 
   # Business services
   auth-service:
@@ -90,13 +90,13 @@ services:
     environment:
       SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres:5432/rideflow_auth"
       EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: "http://eureka-server:8761/eureka/"
-      #      RIDEFLOW_JWT_SECRET: "$${RIDEFLOW_JWT_SECRET:-local-dev-only-secret-change-me-in-production-12}"
+      # RIDEFLOW_JWT_SECRET: "$${RIDEFLOW_JWT_SECRET:-local-dev-only-secret-change-me-in-production-12}"
       RIDEFLOW_JWT_SECRET: "local-dev-only-secret-change-me-in-production-12"
     depends_on:
       postgres:
         condition: service_healthy
       eureka-server:
-        condition: service_healthy
+        condition: service_started
 
   user-service:
     build:
@@ -107,13 +107,13 @@ services:
     environment:
       SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres:5432/rideflow_users"
       EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: "http://eureka-server:8761/eureka/"
-      #      RIDEFLOW_JWT_SECRET: "$${RIDEFLOW_JWT_SECRET:-local-dev-only-secret-change-me-in-production-12}"
+      # RIDEFLOW_JWT_SECRET: "$${RIDEFLOW_JWT_SECRET:-local-dev-only-secret-change-me-in-production-12}"
       RIDEFLOW_JWT_SECRET: "local-dev-only-secret-change-me-in-production-12"
     depends_on:
       postgres:
         condition: service_healthy
       eureka-server:
-        condition: service_healthy
+        condition: service_started
 
   driver-service:
     build:
@@ -123,18 +123,16 @@ services:
       - "8082:8082"
     environment:
       SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres:5432/rideflow_drivers"
+      SPRING_DATA_REDIS_HOST: "redis"
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: "http://eureka-server:8761/eureka/"
       RIDEFLOW_JWT_SECRET: "local-dev-only-secret-change-me-in-production-12"
-      SPRING_DATA_REDIS_HOST: "redis"
     depends_on:
       postgres:
         condition: service_healthy
-      eureka-server:
-        condition: service_healthy
-      kafka:
-        condition: service_healthy
       redis:
         condition: service_healthy
+      eureka-server:
+        condition: service_started
 
   ride-service:
     build:
@@ -144,16 +142,35 @@ services:
       - "8083:8083"
     environment:
       SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres:5432/rideflow_rides"
+      SRPING_KAFKA_BOOTSTRAP_SERVICES: "kafka:29092"
       EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: "http://eureka-server:8761/eureka/"
       #      RIDEFLOW_JWT_SECRET: "$${RIDEFLOW_JWT_SECRET:-local-dev-only-secret-change-me-in-production-12}"
       RIDEFLOW_JWT_SECRET: "local-dev-only-secret-change-me-in-production-12"
+      RIDEFLOW_KAFKA_TEST: "${RIDEFLOW_KAFKA_TEST:false}"
     depends_on:
       postgres:
         condition: service_healthy
-      eureka-server:
-        condition: service_healthy
       kafka:
         condition: service_healthy
+      eureka-server:
+        condition: service_started
+
+  payment-service:
+    build:
+      context: .
+      dockerfile: payment-service/Dockerfile
+    ports:
+      - "8085:8085"
+    environment:
+      SRPING_KAFKA_BOOTSTRAP_SERVICES: "kafka:29092"
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: "http://eureka-server:8761/eureka/"
+      #      RIDEFLOW_JWT_SECRET: "$${RIDEFLOW_JWT_SECRET:-local-dev-only-secret-change-me-in-production-12}"
+      RIDEFLOW_PAYMENT_FAILURE_RATE: "${RIDEFLOW_PAYMENT_FAILURE_RATE:-0.1}"
+    depends_on:
+      kafka:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
 
 volumes:
   pgdata:
