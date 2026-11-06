@@ -39,7 +39,7 @@ public class DriverController {
         Driver newDriver = driverService.getById(id);
         return new ResponseEntity<>(
                 DriverResponse.fromDriver(newDriver),
-                HttpStatus.FOUND
+                HttpStatus.OK
         );
     }
 
@@ -54,10 +54,7 @@ public class DriverController {
     public ResponseEntity<DriverResponse> updateDriverStatus(@PathVariable UUID id,
                                                              @Valid @RequestBody UpdateStatusRequest updateStatusRequest) {
         Driver updateDriver = driverService.updateStatus(id, updateStatusRequest);
-        return new ResponseEntity<>(
-                DriverResponse.fromDriver(updateDriver),
-                HttpStatus.OK
-        );
+        return ResponseEntity.ok(DriverResponse.fromDriver(updateDriver));
     }
 
     @PutMapping("/{id}/location")

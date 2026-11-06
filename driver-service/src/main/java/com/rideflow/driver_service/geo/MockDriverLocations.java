@@ -21,7 +21,7 @@ public class MockDriverLocations {
 
     public MockDriverLocations(DriverRepository driverRepository,
                                LiveDriverIndex liveDriverIndex,
-                               @Value("${rideflow.locationmock.enabled:false}") boolean enabled) {
+                               @Value("${rideflow.locationmock.enabled:true}") boolean enabled) {
         this.driverRepository = driverRepository;
         this.liveDriverIndex = liveDriverIndex;
         this.enabled = enabled;
