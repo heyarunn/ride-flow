@@ -27,7 +27,7 @@ public class RideController {
     }
 
     @PostMapping
-    private ResponseEntity<RideResponse> requestRide(@Valid @RequestBody RideRequest rideRequest) {
+    public ResponseEntity<RideResponse> requestRide(@Valid @RequestBody RideRequest rideRequest) {
         Ride nwRide = rideService.requestRide(rideRequest);
         return new ResponseEntity<>(
                 RideResponse.fromRide(nwRide),
