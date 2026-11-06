@@ -42,7 +42,7 @@ public class DriverServiceImpl implements DriverService {
             throw new DuplicateDriverException("vehicle number already registered: "+driverRequest.vehicleNumber());
         }
 
-        Driver driver = new Driver(driverRequest.username(), driverRequest.email(), driverRequest.phoneNumber(), driverRequest.vehicleNumber());
+        Driver driver = new Driver(driverRequest.username(), driverRequest.email(), driverRequest.phoneNumber(), driverRequest.vehicleNumber(), driverRequest.authSubjectId());
         return driverRepository.save(driver);
     }
 

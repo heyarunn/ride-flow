@@ -2,6 +2,7 @@ package com.rideflow.ride_service.api;
 
 import com.rideflow.ride_service.exception.DriverNotAvailableException;
 import com.rideflow.ride_service.exception.IllegalStatusChangeException;
+import com.rideflow.ride_service.exception.NotRideOwnerException;
 import com.rideflow.ride_service.exception.RideNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -31,6 +32,14 @@ public class GlobalExceptionHandler {
     public ProblemDetail handleRideNotFoundException(RideNotFoundException ex) {
         return ProblemDetail.forStatusAndDetail(
                 HttpStatus.NOT_FOUND,
+                ex.getMessage()
+        );
+    }
+
+    @ExceptionHandler(NotRideOwnerException.class)
+    public ProblemDetail handleNotRideOwnerException(NotRideOwnerException ex) {
+        return ProblemDetail.forStatusAndDetail(
+                HttpStatus.FORBIDDEN,
                 ex.getMessage()
         );
     }

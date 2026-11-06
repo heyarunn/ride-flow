@@ -4,10 +4,14 @@ import com.rideflow.common_events.event.RideCancelledEvent;
 import com.rideflow.common_events.event.RideCompletedEvent;
 import com.rideflow.common_events.event.RideRequestedEvent;
 import com.rideflow.common_events.event.RideStartedEvent;
+import com.rideflow.common_security.CurrentUser;
+import com.rideflow.ride_service.client.DriverServiceClient;
 import com.rideflow.ride_service.domain.Ride;
 import com.rideflow.ride_service.domain.RideStatus;
+import com.rideflow.ride_service.domain.dto.DriverResponse;
 import com.rideflow.ride_service.domain.dto.RideRequest;
 import com.rideflow.ride_service.exception.DriverNotAvailableException;
+import com.rideflow.ride_service.exception.NotRideOwnerException;
 import com.rideflow.ride_service.exception.RideNotFoundException;
 import com.rideflow.ride_service.matching.GeoDriverMatchingService;
 import com.rideflow.ride_service.repository.RideRepository;
@@ -27,11 +31,13 @@ public class RideServiceImpl implements RideService {
     private final RideRepository rideRepository;
     private final GeoDriverMatchingService driverMatchingService;
     private final ApplicationEventPublisher eventPublisher;
+    private final DriverServiceClient driverServiceClient;
 
-    public RideServiceImpl(RideRepository rideRepository, GeoDriverMatchingService driverMatchingService, ApplicationEventPublisher eventPublisher) {
+    public RideServiceImpl(RideRepository rideRepository, GeoDriverMatchingService driverMatchingService, ApplicationEventPublisher eventPublisher, DriverServiceClient driverServiceClient) {
         this.rideRepository = rideRepository;
         this.driverMatchingService = driverMatchingService;
         this.eventPublisher = eventPublisher;
+        this.driverServiceClient = driverServiceClient;
     }
 
     @Override
@@ -64,6 +70,7 @@ public class RideServiceImpl implements RideService {
     @Override
     public Ride markDriverArrived(UUID id) {
         Ride currRide = getRideById(id);
+        assetRideOwnership(currRide);
         currRide.markDriverArrived();
         return currRide;
     }
@@ -71,6 +78,7 @@ public class RideServiceImpl implements RideService {
     @Override
     public Ride rideStarted(UUID id) {
         Ride currRide = getRideById(id);
+        assetRideOwnership(currRide);
         currRide.rideStarted();
         eventPublisher.publishEvent(RideStartedEvent.of(id, currRide.getRiderId(), currRide.getDriverId()));
         return currRide;
@@ -79,6 +87,7 @@ public class RideServiceImpl implements RideService {
     @Override
     public Ride rideCompleted(UUID id) {
         Ride currRide = getRideById(id);
+        assetRideOwnership(currRide);
         currRide.rideCompleted();
         eventPublisher.publishEvent(RideCompletedEvent.of(id, currRide.getRiderId(), currRide.getDriverId()));
         return currRide;
@@ -90,5 +99,17 @@ public class RideServiceImpl implements RideService {
         currRide.rideCancelled();
         eventPublisher.publishEvent(RideCancelledEvent.of(id, currRide.getRiderId(), currRide.getDriverId(), CANCEL_REASON));
         return currRide;
+    }
+
+    @Override
+    public void assetRideOwnership(Ride ride) {
+        UUID caller = CurrentUser.subjectId()
+                .orElseThrow(() -> new NotRideOwnerException("user is not authenticated"));
+        if (ride.getDriverId()==null)
+            throw new NotRideOwnerException("ride has no assigned driver");
+        DriverResponse driverResponse = driverServiceClient.getDriverById(ride.getDriverId());
+        if (driverResponse.authSubjectId()==null || !driverResponse.authSubjectId().equals(caller)) {
+            throw new NotRideOwnerException("loggedin user is not the assigned driver for the ride: "+ ride.getId());
+        }
     }
 }

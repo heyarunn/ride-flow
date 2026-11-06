@@ -1,10 +1,12 @@
 package com.rideflow.driver_service.domain.dto;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
+
+import java.util.UUID;
 
 public record DriverRequest (
+        @NotNull(message = "auth subject id is required")
+        UUID authSubjectId,
 
         @NotBlank(message = "username is required")
         String username,

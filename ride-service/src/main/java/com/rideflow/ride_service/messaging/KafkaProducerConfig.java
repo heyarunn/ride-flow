@@ -1,6 +1,5 @@
 package com.rideflow.ride_service.messaging;
 
-import com.fasterxml.jackson.databind.JsonSerializer;
 import com.rideflow.common_events.event.RideflowEvent;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -10,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
+import org.springframework.kafka.support.serializer.JacksonJsonSerializer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,7 +37,7 @@ public class KafkaProducerConfig {
 
         config.put(
                 ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
-                JsonSerializer.class
+                JacksonJsonSerializer.class
         );
 
         return new DefaultKafkaProducerFactory<>(config);
