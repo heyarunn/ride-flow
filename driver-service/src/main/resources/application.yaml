@@ -31,7 +31,7 @@ rideflow:
     secret: ${RIDEFLOW_JWT_SECRET:local-dev-only-secret-change-me-0123456789}
   locationmock:
     interval-ms: 3000
-    enabled: ${RIDEFLOW_MOCK_ENABLED:true}
+    enabled: ${RIDEFLOW_MOCK_ENABLED:false}
 
 eureka:
   client:
@@ -52,6 +52,6 @@ management:
 
 logging:
   level:
-    org.hibernate.SQL: INFO
+    org.hibernate.SQL: DEBUG
 
 

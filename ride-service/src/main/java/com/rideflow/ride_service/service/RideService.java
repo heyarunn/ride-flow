@@ -23,4 +23,6 @@ public interface RideService {
 
     Ride rideCancelled(UUID id);
 
+    void assetRideOwnership(Ride ride);
+
 }

@@ -26,6 +26,9 @@ public class Driver {
     @Column(name = "vehicle_number", nullable = false, unique = true)
     private String vehicleNumber;
 
+    @Column(name = "auth_subject_id", unique = true)
+    private UUID authSubjectId;
+
     @Enumerated(value = EnumType.STRING)
     @Column(name = "status", nullable = false)
     private DriverStatus status;
@@ -53,6 +56,15 @@ public class Driver {
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.vehicleNumber = vehicleNumber;
+        this.status = DriverStatus.OFFLINE;
+    }
+
+    public Driver(String username, String email, String phoneNumber, String vehicleNumber, UUID authSubjectId) {
+        this.username = username;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.vehicleNumber = vehicleNumber;
+        this.authSubjectId = authSubjectId;
         this.status = DriverStatus.OFFLINE;
     }
 
@@ -120,6 +132,10 @@ public class Driver {
 
     public void setDriverStatus(DriverStatus driverStatus) {
         this.status = driverStatus;
+    }
+
+    public UUID getAuthSubjectId() {
+        return authSubjectId;
     }
 
     public Double getCurrentLatitude() {

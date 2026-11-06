@@ -10,6 +10,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -52,6 +53,7 @@ public class RideController {
     }
 
     // Update status apis
+    @PreAuthorize("hasRole('DRIVER')")
     @PutMapping("/{id}/arrived")
     public ResponseEntity<RideResponse> markDriverArrived(@PathVariable UUID id) {
         Ride updatedRide = rideService.markDriverArrived(id);
@@ -61,6 +63,7 @@ public class RideController {
         );
     }
 
+    @PreAuthorize("hasRole('DRIVER')")
     @PutMapping("/{id}/start")
     public ResponseEntity<RideResponse> rideStarted(@PathVariable UUID id) {
         Ride updatedRide = rideService.markDriverArrived(id);
@@ -70,6 +73,7 @@ public class RideController {
         );
     }
 
+    @PreAuthorize("hasRole('DRIVER')")
     @PutMapping("/{id}/complete")
     public ResponseEntity<RideResponse> rideCompleted(@PathVariable UUID id) {
         Ride updatedRide = rideService.markDriverArrived(id);
