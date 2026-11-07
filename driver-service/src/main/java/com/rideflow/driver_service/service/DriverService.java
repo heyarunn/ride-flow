@@ -23,4 +23,7 @@ public interface DriverService {
 
     Driver updateLocation(UUID id, UpdateLocationRequest updateLocationRequest);
 
+    void reserveForTrip(UUID driverId);
+
+    void releaseFromTrip(UUID driverId);
 }

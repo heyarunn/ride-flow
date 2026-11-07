@@ -41,8 +41,16 @@ spring:
 rideflow:
   jwt:
     secret: ${RIDEFLOW_JWT_SECRET:local-dev-only-secret-change-me-0123456789}
+  matching:
+    radius-km: 5.0
+    driver-limit: 10 # no of drivers to score
+    weights:
+      distance: 0.5
+      rating: 0.3
+      wait: 0.2
   kafka:
     test: ${RIDEFLOW_KAFKA_TEST:true}
+
 
 eureka:
   client:

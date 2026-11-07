@@ -1,9 +1,6 @@
 package com.rideflow.ride_service.service.impl;
 
-import com.rideflow.common_events.event.RideCancelledEvent;
-import com.rideflow.common_events.event.RideCompletedEvent;
-import com.rideflow.common_events.event.RideRequestedEvent;
-import com.rideflow.common_events.event.RideStartedEvent;
+import com.rideflow.common_events.event.*;
 import com.rideflow.common_security.CurrentUser;
 import com.rideflow.ride_service.client.DriverServiceClient;
 import com.rideflow.ride_service.domain.Ride;
@@ -52,6 +49,8 @@ public class RideServiceImpl implements RideService {
         eventPublisher.publishEvent(RideRequestedEvent.of(saved.getId(), saved.getRiderId(),
                 saved.getPickupLatitude(), saved.getPickupLongitude(),
                 saved.getDropoffLatitude(), saved.getDropoffLongitude()));
+        // Matching has happend in the above method call
+        eventPublisher.publishEvent(RideMatchedEvent.of(saved.getId(), saved.getRiderId(), saved.getDriverId()));
         return saved;
     }
 
