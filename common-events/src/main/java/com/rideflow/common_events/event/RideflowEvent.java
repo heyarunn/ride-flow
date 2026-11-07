@@ -11,7 +11,15 @@ import java.util.UUID;
         @JsonSubTypes.Type(value = RideStartedEvent.class, name = "ride.started"),
 })
 public sealed interface RideflowEvent
-        permits DriverLocationUpdateEvent, DriverStatusChangedEvent, PaymentCompletedEvent, PaymentFailedEvent, RideCancelledEvent, RideCompletedEvent, RideRequestedEvent, RideStartedEvent {
+        permits DriverLocationUpdateEvent,
+        DriverStatusChangedEvent,
+        PaymentCompletedEvent,
+        PaymentFailedEvent,
+        RideCancelledEvent,
+        RideCompletedEvent,
+        RideMatchedEvent,
+        RideRequestedEvent,
+        RideStartedEvent {
     UUID eventId();
     LocalDateTime occuredAt();
     String topic();

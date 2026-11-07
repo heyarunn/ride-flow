@@ -1,5 +1,6 @@
 package com.rideflow.driver_service.geo;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -134,6 +135,8 @@ public class GridSpatialIndex {
             UUID driverId,
             double latitude,
             double longitude,
-            double distanceKm
+            double distanceKm,
+            double rating,
+            LocalDateTime availableSince
     ) {}
 }

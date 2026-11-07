@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -82,6 +83,36 @@ public class DriverServiceImpl implements DriverService {
         liveDriverIndex.onLocationUpdatedAsync(
                 id, updateLocationRequest.longitude(), updateLocationRequest.latitude());
         return currDriver;
+    }
+
+    @Override
+    public void reserveForTrip(UUID driverId) {
+        Optional<Driver> driverObj = driverRepository.findById(driverId);
+        if (driverObj.isEmpty()) {
+            return;
+        }
+
+        Driver currDriver = driverObj.get();
+        currDriver.setDriverStatus(DriverStatus.ON_TRIP);
+        liveDriverIndex.onStatusUpdatedAsync(driverId,
+                DriverStatus.ON_TRIP, currDriver.getCurrentLatitude(), currDriver.getCurrentLongitude());
+    }
+
+    @Override
+    public void releaseFromTrip(UUID driverId) {
+        Optional<Driver> driverObj = driverRepository.findById(driverId);
+        if (driverObj.isEmpty()) {
+            return;
+        }
+
+        Driver currDriver = driverObj.get();
+        if (currDriver.getDriverStatus()!=DriverStatus.ON_TRIP) {
+            return;
+        }
+
+        currDriver.setDriverStatus(DriverStatus.AVAILABLE);
+        liveDriverIndex.onStatusUpdatedAsync(driverId,
+                DriverStatus.AVAILABLE, currDriver.getCurrentLatitude(), currDriver.getCurrentLongitude());
     }
 
 }

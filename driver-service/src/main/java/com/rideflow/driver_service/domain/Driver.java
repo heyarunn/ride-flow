@@ -33,6 +33,12 @@ public class Driver {
     @Column(name = "status", nullable = false)
     private DriverStatus status;
 
+    @Column(name = "rating", nullable = false)
+    private double rating;
+
+    @Column(name = "available_since")
+    private LocalDateTime availableSince;
+
     @Column(name = "current_latitude", nullable = false)
     private Double currentLatitude;
 
@@ -136,6 +142,14 @@ public class Driver {
 
     public UUID getAuthSubjectId() {
         return authSubjectId;
+    }
+
+    public double getRating() {
+        return rating;
+    }
+
+    public LocalDateTime getAvailableSince() {
+        return availableSince;
     }
 
     public Double getCurrentLatitude() {
